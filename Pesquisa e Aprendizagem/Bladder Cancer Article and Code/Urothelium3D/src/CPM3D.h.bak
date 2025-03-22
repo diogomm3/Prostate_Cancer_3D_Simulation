@@ -1,0 +1,170 @@
+#ifndef CPM_H
+#define CPM_H
+
+#include <string>
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include "mt19937ar.h"
+#include <set>
+
+struct type;
+
+struct cell {
+
+	type* tau;
+	int vol;
+	double len;
+	////(double W0;
+	double forceX;
+	double reProg;
+	int timeProlif;
+        std::set<int> cell_content;
+
+	////cell() : tau(NULL), vol(0), len(0), W0(), reProg() {}
+	cell() : tau(NULL), vol(0), len(0), forceX(), reProg(), timeProlif() {}
+};
+
+struct pixel {
+
+	cell* tag;
+	double O2;
+	////pixel* nbr [26];
+	pixel* nbr [6];
+
+	////pixel() : tag(NULL), O2()  {int i; for (i=0; i<26; ++i) nbr[i] = NULL;}
+	pixel() : tag(NULL), O2()  {int i; for (i=0; i<6; ++i) nbr[i] = NULL;}
+};
+
+struct type {
+
+	int index;
+
+	double lambdaV;
+	double V_target;
+	double lambdaL;
+	double L_target;
+	double Chi;
+	double lambdaP;
+	double* J;
+
+	type() : lambdaV(0), V_target(0), lambdaL(0), L_target(0), Chi(0), lambdaP(0), J(NULL) {}
+};
+
+struct l_cell {
+
+	l_cell* next;
+	cell CELL;
+
+	l_cell() : next(NULL) {}
+};
+
+struct l_type {
+
+	l_type* next;
+	type TYPE;
+
+	l_type() : next(NULL) {}
+};
+
+class CPM {
+private:
+
+	double T;
+	int Nx, Ny, Nz, NE;
+	pixel *PIXELS;
+	l_type *t_list;
+	int n_types;
+	l_cell *c_list;
+
+	bool h_periodic, v_periodic, d_periodic;
+
+	void** dataref;
+
+public:
+
+	cell* nullcell;
+
+	void setup(int, int, int, int);
+	void setup(int nx, int ny, int nz){ setup(nx, ny, nz, 123); }
+	void setup(int seed){setup(100, 100, 100, seed);}
+	void setup(){setup(100, 100, 100, 123);}
+	void free_mem();
+	void init();
+	void set_dataref(void** value){ dataref = value; }
+
+	void set_periodicity (bool valh, bool valv, bool vald) { h_periodic = valh; v_periodic = valv;  d_periodic = vald; }
+	void set_T(double value) { T = value; }
+
+	void add_type(double, double, double, double, double, double*, double);
+
+	bool add_cell(int, int);
+	bool add_cell_vol(int, int, int, int, int, int, int, int);
+
+	int proliferation(double);
+	int proliferation_stasis(int);
+	bool mitosis(cell*);
+	int checkO2(double);
+	double O2average(cell*);
+	void cell_death (cell*);
+	int random_death();
+	int chemo_death();
+	int bcg_death();
+	void remove_cell(cell*);
+	void remove_cell(pixel* p){remove_cell(p->tag);}
+	void remove_cell(int index){if (index<NE) remove_cell(&(PIXELS[index]));}
+	int contact();
+	int check_contact(cell*);
+	void change_type(cell*, int);
+	bool add_cell(int i, int j, int k, int type) { return add_cell(i*Ny*Nz+j*Nz+k, type); }
+	bool add_rand_cell(int);
+	void add_multiple_rand_cells(int, int);
+
+	void step(int,int,double (*f)(void**, int, int));
+	static double null_f(void** data,int a,int b){ return 0.0; }
+	void step(int index,int nbr) { step(index,nbr,null_f); }
+	void rand_step(double (*f)(void**,int,int));
+	void rand_step() { rand_step(null_f); }
+	//void take_step(pixel*, cell*, double, double);
+        void take_step(pixel*, cell*, cell* ,int, double, double);
+	//void MCS(double (*dH_extra)(void**, int, int)) { for (int i=0; i<NE; ++i) {rand_step(dH_extra); std::cout << " i=" << i << std::endl;} }
+	void MCS(double (*dH_extra)(void**, int, int)) { for (int i=0; i<NE; ++i) rand_step(dH_extra); }
+	void MCS() { MCS(null_f); }
+
+	bool check_step(pixel*, cell*) const;
+	bool check_stem(cell*, int);
+	bool CCA_check(pixel*) const;
+
+	double dH_vol(cell*, cell*) const;
+	double dH_len(cell*, cell*, int, double*, double*) const;
+	double dH_adh(pixel*, cell*) const;
+	double dH_area(cell*, cell*, int) const;
+	double dH_chemotaxis(int, pixel*, cell*) const;
+	double dH_polar(cell*, pixel*, int) const;
+
+	void print_tags(std::string) const;
+	void print_types(std::string) const;
+	void print_O2(std::string) const;
+	//void print_strains(std::string) const;
+	void print_outlines(std::string) const;
+	void print_outlinesX(std::string) const;
+        int n_cell();
+        double BM_length();
+        int ablation();
+        int radical_ablation();
+
+	pixel* access_pixel(int index) const{ return &(PIXELS[index]); }
+	pixel* access_pixels() const{ return PIXELS; }
+	l_cell* access_cell_list() const { return c_list; }
+	int get_size(int coordinate) const { if(coordinate==0) return Nx; else if(coordinate==1) return Ny; else return Nz;}
+
+        void get_content(cell* current);
+        void get_list_content ();
+        void print_nCells(int mcs, std::string filename);
+        void print_xCells(int, std::ofstream&);
+        void diffusion(int, int, int);
+
+	double calc_length (cell*, int) const;
+};
+
+#endif
