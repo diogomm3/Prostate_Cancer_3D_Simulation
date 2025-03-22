@@ -1,0 +1,50 @@
+HOW TO RUN THE UROTHELIUM3D SIMULATION
+
+1. unzip the files on urothelium3D.zip on the directory where you will run the program (for example, "unzip urothelium3D.zip") 
+2. you need to create the directories "obj" and "tests_ur3D" (for example, "mkdir obj") 
+3. to compile the program just needs to write "make". It should create the executable "cpm_uro3D.out" (check that, "ls -lrt")
+4. to run you need to write a command like "./run_uro3D.sh tests_ur3D 7826345 31 2.55 2 1" where the first number is to 
+initialize the random number generator, the next (31 in the example) is to define the run number, 2.55 is the cell adhesion 
+parameter, the next "2" chooses in which urothelium layer the initial tumor cell is placed (in this example it is on the first 
+intermediate layer), and the last "1" is not being used.
+
+The program takes a long time to run, and produces some debuging output, but you can stop it when you want (control C). Every 
+100 steps it writes on directory "tests_ur3D" two large "dat" files with the position of every cell voxel and cell type 
+("test9641.dat", the number changes) or cell tag ("test3_9641.dat").
+ 
+The main program is the "cpm_uro3D.cpp" on the "src" directory. There you can control the main parameters as the cell adhesion 
+energy (J11 in line 30), and lambda_V and V_T (the amplitude of the volume condition and the target volume), lambda_A and A_T 
+(the amplitude of the area condition and the target area), on lines 158 to 166. The other important code is on "CPM3D.cpp", with 
+many functions (some of them are not being used).
+for example, in the instruction
+cpm.add_type(2400, 2*32e3, 1.5e9, 2*32e3, 0, &J02[0], 0);
+it defines, for that cell type, lambdaV=2400, V_T=2*32e3, lambdaA=1.5e9, A_T=2*32e3. 
+
+To see the projection of slices of the urothelium on "xy" plane you can run the matlab code "test_largeX.m", changing the name of 
+the "dat" file. The projections on "xz" plane are produced by "test_largeBMx.m" and a kind of 3D plot by "super_plot.m" (matlab must
+be run on the directory where the dat files are, usually in tests_ur3D. 
+
+
+
+FOR WINDOWS
+1 - Unzip the files from the folder urothelium3D.zip on the directory that the program will be runned
+2 - Open VS Code with the mingw64 compiler
+3 - Open the directory of the unziped file from the first step on the VS Code explorer
+4 - Create using CMD (Command Prompt) go to the directory of the unziped file using the command 'cd FileLocation'
+5 - Create two new directories in the CMD called "obj" and "tests_ur3D" using the command 'mkdir DirName'
+6 - Open the file "cpm_uro3D.cpp" on the "src" directory on the VS Code and check for the header files to see if they are correctly included
+7 - Compile the file "cpm_uro3D.cpp" using the terminal of the VS Code. To do so, use the following command: 'g++ .\src\cpm_uro3D.cpp .\src\OtherFiles.cpp -o WantedName'
+    These other files are the ones used on the main code with the header extension. To compile we need to use the cpp extension
+8 - After compiling a file with the name WantedName and the extension .exe (executable) was created
+9 - To run the new file use the VS Code Terminal and the command '.\WantedName.exe' and after that some numbers changing the command to '.\WantedName.exe 7826345 31 2.55 2 1'
+    First number is to initialize the random number generator; second is to define the run number; third is the cell adhesion parameter; fourth chooses in which 
+    urothelium layer the initial tumor cell is placed (in this example it is on the first intermediate layer); fifth "1" is not being used
+10 - The program takes a long time to run and produces some debuging output and can be stopped using 'Control C'. Every 100 steps it creates on directory "tests_ur3D" 
+    two large files with the '.dat' extension with the position of every cell voxel and cell type ("test9641.dat", the number changes) or cell tag ("test3_9641.dat")
+11 - To see the '.dat' files created the file "test_large.m" can be runned on MATLAB using the name of the '.dat' file we want and this will give a 2D image
+12 - To see the 2D plot on the "xy" plane use the "test_largeBMx.m" file using the file name obtained when executing the code
+13 - To see the 3D plot, use the file "super_plot.m" (warning: the RAM memory of the computer needs to be enough to run all the code)
+
+
+
+

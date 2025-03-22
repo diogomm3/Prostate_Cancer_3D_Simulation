@@ -1,0 +1,9 @@
+- Na leitura do ficheiro de texto com as várias células em coordenadas cilíndricas (em função de ró, phi e z) permissão para aceitar valores inteiros para as variáveis ró e z e valores que sejam floats no caso da variável phi (associada a esta, mudança das declarações da função e do tipo de variáveis no programa principal)
+- Criação das variáveis do tipo inteiro xi, xf, yi, yf, através da transformação de coordenadas cilíndricas em esféricas (x = p * cos(phi); y = p * sin(phi))
+- Como o domínio da criação das células está preparado para aceitar apenas valores positivos e como o valor máximo de x e y é o valor máximo de ró, então, na criação das variáveis cartesianas, somar o valor máximo de p, de modo a que todos os valores sejam positivos
+- Adaptação do domínio conforme a descrição anterior, passando este a ter os valores 400x400x16
+- Alteração da variável h_periodic para false
+- Alteração de toda a função add_cell_vol de modo a que os dados sejam lidos de outra maneira
+- Alteração do ficheiro MATLAB que faz os cortes, para que estes sejam feitos nos três eixos 
+
+

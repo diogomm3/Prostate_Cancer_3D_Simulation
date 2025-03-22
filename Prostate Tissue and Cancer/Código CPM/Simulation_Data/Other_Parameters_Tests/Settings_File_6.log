@@ -1,0 +1,24 @@
+*** Simulation Configuration ***
+
+ - GENERAL - SecondGeomLarge
+Seed: 9122543
+Number of Monte Carlo Steps: 1000
+Grid size: 250X250X252
+Grid element side length: 2.5e-06
+Periodic Condition: x - 0
+Periodic Condition: y - 0
+Periodic Condition: z - 0
+
+ - CELLULAR POTTS MODEL
+Luminal cells target volume: 795
+Luminal cells inelasticity constant (lambdav2): 1900
+Basal cells target voluem: 340
+Basal cells inelasticity constant (lambdav3): 2300
+Lumen inelasticity constant (lambdav1): 1700
+Stroma inelasticity constante (lambdav4): 1e+12
+Tumoral cells target volume: 795
+Tumoral cells inelasticity constant (lambdav5): 8800
+Tumoral cells initial layer: 8
+Cell1-Cell1: 2.295
+Cell1-Cell2 adhesion: 2.55
+Proliferation Time: 25
